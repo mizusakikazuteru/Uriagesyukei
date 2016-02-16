@@ -1,4 +1,5 @@
 package Uriagesyukei;
+水崎です。
 
 import java.io.BufferedReader;
 import java.io.File;
