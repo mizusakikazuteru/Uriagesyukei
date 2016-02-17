@@ -1,6 +1,6 @@
 package Uriagesyukei;
 
-
+ああああああああああ
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Set;
+import java.security.KeyStore.Entry;
 
 public class Uriagesyukei {
     // ******支店定義ファイル*********//
@@ -343,5 +344,6 @@ public class Uriagesyukei {
             }
             return true;
         }
+}
 }
 }
