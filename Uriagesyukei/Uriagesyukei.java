@@ -227,7 +227,7 @@ public class Uriagesyukei {
 		// System.out.println(Earningsbranch);
 		// System.out.println(Earningscommodity);
 
-		// 集計結果出力
+		// ***************集計結果出力*********************
 		// 集計結果出力メソッドの呼び出し(支店)
 		if (!branchOutput(Earningsbranch, args[0], "branch.out", branchlist)) {
 			System.out.println("支店別集計結果ファイルが書き込み時にエラーが発生しました");
