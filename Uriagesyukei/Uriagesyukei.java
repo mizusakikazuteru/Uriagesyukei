@@ -228,20 +228,19 @@ public class Uriagesyukei {
 		// System.out.println(Earningscommodity);
 
 		// ***************集計結果出力*********************
-		// 集計結果出力メソッドの呼び出し(支店)
+		// 支店集計結果出力メソッドの呼び出し
 		if (!branchOutput(Earningsbranch, args[0], "branch.out", branchlist)) {
 			System.out.println("支店別集計結果ファイルが書き込み時にエラーが発生しました");
 			return;
 		}
-		//System.out.println( Earningsbranch);
+		//System.out.println();
 
-		// 集計結果出力メソッドの呼び出し(商品)
-		if (!commodityOutput(Earningscommodity, args[0], "commodity.out",
-				commoditylist)) {
+		// 商品集計結果出力メソッドの呼び出し
+		if (!commodityOutput(Earningscommodity, args[0], "commodity.out",commoditylist)) {
 			System.out.println("商品別集計結果ファイルが書き込み時にエラーが発生しました");
 			return;
 		}
-		System.out.println( Earningscommodity);
+		//System.out.println();
 	}
 
 	// 支店集計結果出力メソッド
@@ -278,6 +277,10 @@ public class Uriagesyukei {
 				bw.write(branch.get(descendingorderMap.getKey()) + ",");
 				bw.write(descendingorderMap.getValue().toString());
 				bw.newLine();
+				//支店集計出力
+				System.out.print(descendingorderMap.getKey() + ",");
+				System.out.print(branch.get(descendingorderMap.getKey()) + ",");
+				System.out.println(descendingorderMap.getValue().toString());
 			}
 		} catch (IOException e) {
 			return false;
@@ -328,7 +331,10 @@ public class Uriagesyukei {
 				bw.write(commodity.get(descendingorderMap.getKey()) + ",");
 				bw.write(descendingorderMap.getValue().toString());
 				bw.newLine();
-				//System.out.print(descendingorderMap.getKey() + ",");
+				//商品集計出力
+				System.out.print(descendingorderMap.getKey() + ",");
+				System.out.print(commodity.get(descendingorderMap.getKey()) + ",");
+				System.out.println(descendingorderMap.getValue().toString());
 			}
 		} catch (IOException e) {
 			return false;
