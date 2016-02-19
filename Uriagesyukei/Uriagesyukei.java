@@ -233,7 +233,7 @@ public class Uriagesyukei {
 			System.out.println("支店別集計結果ファイルが書き込み時にエラーが発生しました");
 			return;
 		}
-
+		//System.out.println( Earningsbranch);
 
 		// 集計結果出力メソッドの呼び出し(商品)
 		if (!commodityOutput(Earningscommodity, args[0], "commodity.out",
@@ -241,6 +241,7 @@ public class Uriagesyukei {
 			System.out.println("商品別集計結果ファイルが書き込み時にエラーが発生しました");
 			return;
 		}
+		System.out.println( Earningscommodity);
 	}
 
 	// 支店集計結果出力メソッド
