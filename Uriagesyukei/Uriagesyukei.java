@@ -35,20 +35,27 @@ public class Uriagesyukei {
 
 		try {
 			// ファイル読み込み
-			BufferedReader br = new BufferedReader(new FileReader(new File(
-					args[0], "branch.lst")));
+			BufferedReader br = new BufferedReader(new FileReader(new File(args[0], "branch.lst")));
 			String line;
 
 			// 一行ずつファイルを読み込む。
 			while ((line = br.readLine()) != null) {
 
 				String[] code = line.split(","); // splitメソッドでlineをカンマで分割
-				branchlist.put(code[0], code[1]);// キーと値を追加する(mapに作る）
 
 				if (!code[0].matches("^\\d{3}")) {
 					System.out.println("支店ファイルのフォーマットが不正です");
 					// 支店コード3桁ならtrue
+
 				}
+				if (!code[1].matches(".+支店")) {
+					System.out.println("支店ファイルのフォーマットが不正です");
+					// 支店名の末尾が[支店」ならtrue
+
+				}
+				branchlist.put(code[0], code[1]);// キーと値を追加する(mapに作る）
+				// System.out.println(code[0]);
+				// System.out.println(code[1]);
 			}
 			br.close();
 		} catch (FileNotFoundException e) {
@@ -72,20 +79,27 @@ public class Uriagesyukei {
 		HashMap<String, String> commoditylist = new HashMap<String, String>();
 		try {
 			// ファイル読み込み
-			BufferedReader br = new BufferedReader(new FileReader(new File(
-					args[0], "commodity.lst")));
+			BufferedReader br = new BufferedReader(new FileReader(new File(args[0], "commodity.lst")));
 			String line;
 
 			// 一行ずつファイルを読み込む。
 			while ((line = br.readLine()) != null) {
 
 				String[] cord = line.split(","); // splitメソッドでlineをカンマで分割
-				commoditylist.put(cord[0], cord[1]);// リストに商品コードと商品名を追加
+
 				// 商品コードアルファベットと数字。8桁固定ならtrue
 				if (!cord[0].matches("[a-zA-Z0-9]{8}")) {
 					System.out.println("商品ファイルのフォーマットが不正です");
 
 				}
+				// 商品名がアルファベットならtrue
+				if (!cord[1].matches("[a-zA-Zａ-ｚＡ-Ｚ]+")) {
+					System.out.println("商品ファイル商品名のフォーマットが不正です");
+
+				}
+				commoditylist.put(cord[0], cord[1]);// リストに商品コードと商品名を追加
+				// System.out.println(cord[0]);
+				// System.out.println(cord[1]);
 			}
 			br.close();
 		} catch (FileNotFoundException e) {
@@ -100,12 +114,12 @@ public class Uriagesyukei {
 		// 連番リストを作成
 		ArrayList<Integer> serial = new ArrayList<Integer>();
 		// 売上支店リストを作る
-		ArrayList<String> EarningsFileNameList = new ArrayList<String>();
+		ArrayList<String> earningsFileNameList = new ArrayList<String>();
 		// 売上商品リストを作る
-		ArrayList<Integer> EarningsFileProductcodeList = new ArrayList<Integer>();
+		ArrayList<Integer> earningsFileProductcodeList = new ArrayList<Integer>();
 		// キーと値を生成(売上支店、売上商品）
-		HashMap<String, Long> Earningsbranch = new HashMap<String, Long>();
-		HashMap<String, Long> Earningscommodity = new HashMap<String, Long>();
+		HashMap<String, Long> earningsbranch = new HashMap<String, Long>();
+		HashMap<String, Long> earningscommodity = new HashMap<String, Long>();
 		// 抽出したファイル⇒ファイル名と拡張子をわけ、ファイル名と拡張子をそれぞれ保持
 		// System.out.println(filelist[1].getName());
 
@@ -119,6 +133,7 @@ public class Uriagesyukei {
 			// System.out.println(index);
 			// listFileNameからindex分（文字列の長さ）を取り出しfileNameに代入。
 			String fileName = listFileName.substring(0, index);// 0始まり8まで(拡張子手前まで）
+			// String fileName = "00000001.rcd".substring(8 + 1);
 			// System.out.println(fileName);
 			// listFileNameからドット以降の文字列をextensionに代入
 			String extension = listFileName.substring(index + 1);// 8+1(.ドット以降）
@@ -127,7 +142,7 @@ public class Uriagesyukei {
 				// 連番チェック用リストに入れる
 				serial.add(Integer.parseInt(fileName));
 				// 売上ファイル用にrcd拡張子ファイルを入れる。
-				EarningsFileNameList.add(listFileName);
+				earningsFileNameList.add(listFileName);
 			}
 		}
 		// 連番チェック
@@ -145,39 +160,35 @@ public class Uriagesyukei {
 			}
 		}
 
-		ArrayList<String> EarningsList = new ArrayList<String>();
+		ArrayList<String> earningsList = new ArrayList<String>();
 		// 売上ファイル用の要素数分処理を繰り返す
-		for (int i = 0; i < EarningsFileNameList.size(); i++) {
-			EarningsList = new ArrayList<String>();
+		for (int i = 0; i < earningsFileNameList.size(); i++) {
+			earningsList = new ArrayList<String>();
 			// コマンドライン引数に集計リストのファイル名を文字列連結し、ファイルを開く
 
 			BufferedReader br = null;// ここで宣言、変数のスコープ（範囲）
 			try {
-				br = new BufferedReader(new FileReader(new File(args[0],
-						EarningsFileNameList.get(i))));
+				br = new BufferedReader(new FileReader(new File(args[0], earningsFileNameList.get(i))));
 				// 売上ファイルを一行ずつ読み込む
 				String line = null;
 				while ((line = br.readLine()) != null) {
 					// 読込んだデータを集計リストに追加する
-					EarningsList.add(line);
+					earningsList.add(line);
 				}
 
 				// 集計リストの要素数が3かどうか
-				if (EarningsList.size() != 3) {
-					System.out.println("<" + EarningsFileNameList.get(i)
-							+ ">のフォーマットが不正です");
+				if (earningsList.size() != 3) {
+					System.out.println("<" + earningsFileNameList.get(i) + ">のフォーマットが不正です");
 					return;
 				}
 				// 支店定義用HashMapキーの有無。
-				if (!branchlist.containsKey(EarningsList.get(0))) {
-					System.out.println("<" + EarningsFileNameList.get(i)
-							+ ">の支店コードが不正です");
+				if (!branchlist.containsKey(earningsList.get(0))) {
+					System.out.println("<" + earningsFileNameList.get(i) + ">の支店コードが不正です");
 					return;
 				}
 				// 商品定義用HashMapのキーの有無
-				if (!commoditylist.containsKey(EarningsList.get(1))) {
-					System.out.println("<" + EarningsFileNameList.get(i)
-							+ ">の商品コードが不正です");
+				if (!commoditylist.containsKey(earningsList.get(1))) {
+					System.out.println("<" + earningsFileNameList.get(i) + ">の商品コードが不正です");
 					return;
 				}
 
@@ -194,24 +205,23 @@ public class Uriagesyukei {
 
 			long salebranch = 0L;
 			long salecommodity = 0L;
-			String branchCode = EarningsList.get(0);
-			String commodityCode = EarningsList.get(1);
+			String branchCode = earningsList.get(0);
+			String commodityCode = earningsList.get(1);
 			// 売上額を数値型に変換し保持する
-			salebranch = Long.parseLong(EarningsList.get(2));
-			salecommodity = Long.parseLong(EarningsList.get(2));
+			salebranch = Long.parseLong(earningsList.get(2));
+			salecommodity = Long.parseLong(earningsList.get(2));
 
 			// 支店別合計売上額HashMapの該当する支店に売上額を加算する
-			if (Earningsbranch.containsKey(branchCode)) {
-				salebranch = Earningsbranch.get(branchCode) + salebranch;
+			if (earningsbranch.containsKey(branchCode)) {
+				salebranch = earningsbranch.get(branchCode) + salebranch;
 			}
-			Earningsbranch.put(branchCode, salebranch);
+			earningsbranch.put(branchCode, salebranch);
 
 			// 商品別合計売上額HashMapの該当する商品に売上額を加算する
-			if (Earningscommodity.containsKey(commodityCode)) {
-				salecommodity = Earningscommodity.get(commodityCode)
-						+ salecommodity;
+			if (earningscommodity.containsKey(commodityCode)) {
+				salecommodity = earningscommodity.get(commodityCode) + salecommodity;
 			}
-			Earningscommodity.put(commodityCode, salecommodity);
+			earningscommodity.put(commodityCode, salecommodity);
 
 			// 加算した合計金額が10桁超えていないかどうか
 			if (salebranch >= 10000000000L) {
@@ -229,36 +239,32 @@ public class Uriagesyukei {
 
 		// ***************集計結果出力*********************
 		// 支店集計結果出力メソッドの呼び出し
-		if (!branchOutput(Earningsbranch, args[0], "branch.out", branchlist)) {
+		if (!branchOutput(earningsbranch, args[0], "branch.out", branchlist)) {
 			System.out.println("支店別集計結果ファイルが書き込み時にエラーが発生しました");
 			return;
 		}
-		//System.out.println();
+		// System.out.println();
 
 		// 商品集計結果出力メソッドの呼び出し
-		if (!commodityOutput(Earningscommodity, args[0], "commodity.out",commoditylist)) {
+		if (!commodityOutput(earningscommodity, args[0], "commodity.out", commoditylist)) {
 			System.out.println("商品別集計結果ファイルが書き込み時にエラーが発生しました");
 			return;
 		}
-		//System.out.println();
+		// System.out.println();
 	}
 
 	// 支店集計結果出力メソッド
-	public static boolean branchOutput(HashMap<String, Long> branchMap,
-			String filepath, String newFileName, HashMap<String, String> branch) {
+	public static boolean branchOutput(HashMap<String, Long> branchMap, String filepath, String newFileName,
+			HashMap<String, String> branch) {
 		// 支店(商品)別合計金額用HashMapの合計金額を降順にしたコレクション(合計額降順)を生成
-		List<Map.Entry<String, Long>> descendingOrder = new ArrayList<Map.Entry<String, Long>>(
-				branchMap.entrySet());
-		Collections.sort(descendingOrder,
-				new Comparator<Map.Entry<String, Long>>() {
+		List<Map.Entry<String, Long>> descendingOrder = new ArrayList<Map.Entry<String, Long>>(branchMap.entrySet());
+		Collections.sort(descendingOrder, new Comparator<Map.Entry<String, Long>>() {
 
-					@Override
-					public int compare(Entry<String, Long> entry1,
-							Entry<String, Long> entry2) {
-						return ((Long) entry2.getValue())
-								.compareTo((Long) entry1.getValue());
-					}
-				});
+			@Override
+			public int compare(Entry<String, Long> entry1, Entry<String, Long> entry2) {
+				return (entry2.getValue()).compareTo(entry1.getValue());
+			}
+		});
 
 		// ファイルオブジェクトを生成し、ファイルを生成する
 		BufferedWriter bw = null;
@@ -267,8 +273,7 @@ public class Uriagesyukei {
 			File fileOut = new File("filepath\\" + newFileName);
 			fileOut.createNewFile();
 			// 文字、配列を出力また、OutStreamWriterで文字からバイトへ橋渡し
-			bw = new BufferedWriter(new OutputStreamWriter(
-					new FileOutputStream(fileOut, false), "UTF-8"));
+			bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileOut, false), "UTF-8"));
 			// 合計額降順コレクションを抽出していく
 			for (Entry<String, Long> descendingorderMap : descendingOrder) {
 				// 合計額降順コレクションのキーの支店コードを用いて支店名用HashMapから支店名を取り出す
@@ -277,7 +282,7 @@ public class Uriagesyukei {
 				bw.write(branch.get(descendingorderMap.getKey()) + ",");
 				bw.write(descendingorderMap.getValue().toString());
 				bw.newLine();
-				//支店集計出力
+				// 支店集計出力
 				System.out.print(descendingorderMap.getKey() + ",");
 				System.out.print(branch.get(descendingorderMap.getKey()) + ",");
 				System.out.println(descendingorderMap.getValue().toString());
@@ -297,22 +302,17 @@ public class Uriagesyukei {
 	}
 
 	// 商品集計結果出力メソッド
-	public static boolean commodityOutput(HashMap<String, Long> commodityMap,
-			String filepath, String newFileName,
+	public static boolean commodityOutput(HashMap<String, Long> commodityMap, String filepath, String newFileName,
 			HashMap<String, String> commodity) {
 		// 支店(商品)別合計金額用HashMapの合計金額を降順にしたコレクション(合計額降順)を生成
-		List<Map.Entry<String, Long>> descendingOrder = new ArrayList<Map.Entry<String, Long>>(
-				commodityMap.entrySet());
-		Collections.sort(descendingOrder,
-				new Comparator<Map.Entry<String, Long>>() {
+		List<Map.Entry<String, Long>> descendingOrder = new ArrayList<Map.Entry<String, Long>>(commodityMap.entrySet());
+		Collections.sort(descendingOrder, new Comparator<Map.Entry<String, Long>>() {
 
-					@Override
-					public int compare(Entry<String, Long> entry1,
-							Entry<String, Long> entry2) {
-						return ((Long) entry2.getValue())
-								.compareTo((Long) entry1.getValue());
-					}
-				});
+			@Override
+			public int compare(Entry<String, Long> entry1, Entry<String, Long> entry2) {
+				return (entry2.getValue()).compareTo(entry1.getValue());
+			}
+		});
 
 		// ファイルオブジェクトを生成し、ファイルを生成する
 		BufferedWriter bw = null;
@@ -321,8 +321,7 @@ public class Uriagesyukei {
 			File fileOut = new File("filepath\\" + newFileName);
 			fileOut.createNewFile();
 			// 文字、配列を出力また、OutStreamWriterで文字からバイトへ橋渡し
-			bw = new BufferedWriter(new OutputStreamWriter(
-					new FileOutputStream(fileOut, false), "UTF-8"));
+			bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileOut, false), "UTF-8"));
 			// 合計額降順コレクションを抽出していく
 			for (Entry<String, Long> descendingorderMap : descendingOrder) {
 				// 合計額降順コレクションのキーの支店コードを用いて支店名用HashMapから支店名を取り出す
@@ -331,7 +330,7 @@ public class Uriagesyukei {
 				bw.write(commodity.get(descendingorderMap.getKey()) + ",");
 				bw.write(descendingorderMap.getValue().toString());
 				bw.newLine();
-				//商品集計出力
+				// 商品集計出力
 				System.out.print(descendingorderMap.getKey() + ",");
 				System.out.print(commodity.get(descendingorderMap.getKey()) + ",");
 				System.out.println(descendingorderMap.getValue().toString());
