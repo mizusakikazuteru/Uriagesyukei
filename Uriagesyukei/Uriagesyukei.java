@@ -203,13 +203,15 @@ public class Uriagesyukei {
 				}
 			}
 
-			long salebranch = 0L;
-			long salecommodity = 0L;
+			//long salebranch = 0L;
+			//long salecommodity = 0L;
 			String branchCode = earningsList.get(0);
 			String commodityCode = earningsList.get(1);
 			// 売上額を数値型に変換し保持する
-			salebranch = Long.parseLong(earningsList.get(2));
-			salecommodity = Long.parseLong(earningsList.get(2));
+			//salebranch = Long.parseLong(earningsList.get(2));
+			Long salebranch = Long.parseLong(earningsList.get(2));
+			//salecommodity = Long.parseLong(earningsList.get(2));
+			Long salecommodity = Long.parseLong(earningsList.get(2));
 
 			// 支店別合計売上額HashMapの該当する支店に売上額を加算する
 			if (earningsbranch.containsKey(branchCode)) {
